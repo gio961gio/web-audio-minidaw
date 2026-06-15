@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACTAM | Simpler</title>
+    <link rel="stylesheet" href="sampler_.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+</head>
+<body>
+    <div id="dashboard">
+        <header>
+            <h1 id="main-title">A C T A M <span>Simpler</span></h1>
+            <p class="subtitle">1-SHOT PITCH SHIFTING & WARP SAMPLER</p>
+        </header>
+
+        <main>
+            <div id="waveform-display" class="drop-zone">
+                <canvas id="wave-canvas"></canvas>
+                
+                <div id="region-overlay" class="hidden">
+                    <div id="unselected-left" class="dim-region"></div>
+                    <div id="unselected-right" class="dim-region"></div>
+                    
+                    <div id="fade-visual"></div>
+                    <div id="fade-out-marker" title="Trascina per il Fade Out"></div>
+
+                    <div id="start-marker" class="marker" title="Trascina per tagliare l'inizio"></div>
+                    <div id="end-marker" class="marker" title="Trascina per tagliare la fine"></div>
+                    <div id="playhead" class="playhead hidden"></div>
+                </div>
+
+                <div class="overlay-text" id="drop-text">DRAG & DROP SAMPLES HERE</div>
+                <div class="sample-info hidden" id="sample-info">
+                    <span id="sample-name">No sample loaded</span>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="control-panel">
+                <div class="adsr-group">
+                    <div class="control-item">
+                        <label>ATTACK</label>
+                        <input type="range" id="attack" min="0.001" max="2" step="0.01" value="0.01">
+                    </div>
+                    <div class="control-item">
+                        <label>DECAY</label>
+                        <input type="range" id="decay" min="0.01" max="2" step="0.01" value="0.3">
+                    </div>
+                    <div class="control-item">
+                        <label>SUSTAIN</label>
+                        <input type="range" id="sustain" min="0" max="1" step="0.01" value="1">
+                    </div>
+                    <div class="control-item">
+                        <label>RELEASE</label>
+                        <input type="range" id="release" min="0.01" max="3" step="0.01" value="0.5">
+                    </div>
+                </div>
+
+                <div class="master-group">
+                    <div class="control-item">
+                        <label>WARP</label>
+                        <label class="switch">
+                            <input type="checkbox" id="warp-toggle">
+                            <span class="slider-toggle"></span>
+                        </label>
+                    </div>
+
+                    <div class="control-item">
+                        <label>LOOP</label>
+                        <label class="switch">
+                            <input type="checkbox" id="loop-toggle">
+                            <span class="slider-toggle"></span>
+                        </label>
+                    </div>
+
+                    <div class="control-item">
+                        <label>VOLUME</label>
+                        <input type="range" id="volume" min="0" max="1" step="0.01" value="0.7">
+                    </div>
+                </div>
+            </div>
+            <div class="keyboard-hint">Use PC Keyboard to play (A, W, S, E, D, F...) - Octave: Z/X</div>
+        </footer>
+    </div>
+    
+    <script src="../mixer_fx.js"></script>
+    <script src="sampler_.js"></script>
+</body>
+</html>

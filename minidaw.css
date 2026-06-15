@@ -1,0 +1,812 @@
+:root {
+    --bg-dark: #0f1114;
+    --bg-medium: #1a1d21;
+    --bg-light: #2c313a;
+    --accent-color: #3b82f6;
+    /* Modern Blue */
+    --accent-glow: rgba(59, 130, 246, 0.5);
+    --text-main: #e2e8f0;
+    --text-dim: #94a3b8;
+    --border-color: #334155;
+    --grid-line-color: rgba(255, 255, 255, 0.05);
+    --bar-line-color: rgba(255, 255, 255, 0.15);
+    --track-height: 80px;
+    --sidebar-width: 280px;
+    --timeline-height: 30px;
+    --step-width: 40px;
+    /* Based on piano roll logic */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header / Toolbar */
+.toolbar {
+    height: 60px;
+    background: rgba(26, 29, 33, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 32px;
+    z-index: 100;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.bpm-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+}
+
+.bpm-control label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-dim);
+}
+
+.bpm-control input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--accent-color);
+    width: 60px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.9rem;
+    outline: none;
+    appearance: none;
+    -moz-appearance: textfield;
+}
+
+.grid-snap-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    border-right: 1px solid var(--border-color);
+}
+
+.grid-snap-control label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-dim);
+}
+
+.grid-snap-control select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.bpm-control input::-webkit-inner-spin-button,
+.bpm-control input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    background: linear-gradient(90deg, #fff, #94a3b8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Main Layout */
+.main-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Track List Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--bg-medium);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    z-index: 500;
+    /* Ensure it stays above the playlist grid */
+}
+
+/* Pattern Selector in Toolbar */
+.pattern-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    margin-left: auto;
+}
+
+.current-pattern-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.current-pattern-display span {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-main);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.pattern-color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
+}
+
+.selector-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s;
+    line-height: 1;
+}
+
+.selector-btn:hover {
+    color: var(--text-main);
+}
+
+.action-btn:hover#addPatternBtn {
+    color: #10b981;
+}
+
+.action-btn:hover#deletePatternBtn {
+    color: #ef4444;
+}
+
+.sidebar-header {
+    height: var(--timeline-height);
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+}
+
+.track-labels {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: visible;
+    /* Allow dropdown to escape horizontally */
+}
+
+.add-track-btn {
+    background: transparent;
+    border: none;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-dim);
+    padding: 12px;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.add-track-btn:hover {
+    color: var(--accent-light);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.track-label {
+    height: var(--track-height);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+    gap: 12px;
+    position: relative;
+    overflow: visible;
+    /* Allow dropdown to be seen */
+    z-index: 1;
+    /* Default low z-index */
+}
+
+.track-label.dropdown-open {
+    z-index: 2000;
+    /* Pop to front when menu is open */
+}
+
+.track-instrument-btn {
+    align-self: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-dim);
+    font-size: 1rem;
+    padding: 2px 8px;
+    height: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.track-instrument-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.track-control-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: bold;
+}
+
+.track-control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+}
+
+.solo-btn.active {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border-color: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+.delete-track-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+/* Instrument Type Dropdown */
+.instrument-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    /* Align to the right of the button to keep it within the 280px sidebar */
+    background: var(--bg-medium);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+    z-index: 2005;
+    display: none;
+    flex-direction: column;
+    padding: 6px;
+    min-width: 140px;
+    animation: slideDownFade 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.instrument-dropdown-item {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.instrument-dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+}
+
+.instrument-dropdown-item.selected {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent-color);
+}
+
+.instrument-dropdown-item i {
+    font-style: normal;
+    opacity: 0.7;
+}
+
+.track-label:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 4px solid #fff;
+}
+
+.track-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    flex: 1;
+    /* Take available space but don't overflow */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 50px;
+}
+
+/* Playlist Grid Area */
+.playlist-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.timeline {
+    height: var(--timeline-height);
+    width: 4000px;
+    /* Matching grid */
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    cursor: ew-resize;
+    z-index: 20;
+    /* Grid lines for steps (4 beats / 4 steps each) */
+    background-image: linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px);
+    background-size: 40px 100%;
+}
+
+.loop-region {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background: rgba(239, 68, 68, 0.2);
+    border-left: 2px solid #ef4444;
+    border-right: 2px solid #ef4444;
+    display: none;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.bar-marker {
+    position: absolute;
+    top: 5px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    padding-left: 6px;
+    pointer-events: none;
+}
+
+.grid-scroll-area {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    background-color: var(--bg-dark);
+}
+
+.grid-background {
+    position: absolute;
+    top: var(--timeline-height);
+    /* Offset to start after timeline */
+    bottom: 0;
+    left: 0;
+    width: 4000px;
+    pointer-events: none;
+    background-image:
+        linear-gradient(to right, var(--bar-line-color) 1.5px, transparent 1.5px),
+        linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--border-color) 1px, transparent 1px);
+    /* bar-line-color (16 steps = 640px), grid-line-color (4 steps/1 beat = 160px), track-height (rows) */
+    background-size: 640px 100%, 160px 100%, 100% var(--track-height);
+}
+
+.tracks-layer {
+    position: absolute;
+    top: var(--timeline-height);
+    /* Offset to start after timeline */
+    bottom: 0;
+    left: 0;
+    width: 4000px;
+    z-index: 10;
+}
+
+.clip {
+    position: absolute;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    height: var(--track-height);
+    /* Occupy full height */
+    margin-top: 0;
+    cursor: grab;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 6px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    user-select: none;
+    overflow: hidden;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.clip.selected {
+    outline: 2px solid white;
+    outline-offset: -1px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4), 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+}
+
+.clip.dragging {
+    cursor: grabbing;
+    opacity: 0.8;
+    z-index: 1000;
+    transform: scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.clip-resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 10px;
+    height: 100%;
+    cursor: ew-resize;
+    z-index: 20;
+}
+
+.clip-resize-handle:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.clip-fade-handle {
+    position: absolute;
+    top: 0;
+    width: 8px;
+    height: 100%;
+    cursor: ew-resize;
+    z-index: 25;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.clip:hover .clip-fade-handle {
+    opacity: 1;
+}
+
+.clip-fade-handle::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.clip-fade-in {
+    left: 0;
+}
+
+.clip-fade-in::after {
+    right: 0;
+}
+
+.clip-fade-out {
+    right: 10px;
+    /* don't overlap resize handle */
+}
+
+.clip-fade-out::after {
+    left: 0;
+}
+
+.clip-notes-preview {
+    position: absolute;
+    top: 20px;
+    /* Leave space for text title */
+    left: 0;
+    right: 0;
+    bottom: 5px;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.mini-note {
+    position: absolute;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 1px;
+}
+
+.clip:active {
+    cursor: grabbing;
+}
+
+.track-row {
+    height: var(--track-height);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    width: 100%;
+    position: relative;
+}
+
+.playhead {
+    position: absolute;
+    top: var(--timeline-height);
+    /* Offset to start after timeline */
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    background-color: #fbbf24;
+    /* Amber 400 */
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+    pointer-events: none;
+    z-index: 30;
+    display: none;
+    transition: left linear;
+    /* Smooth sliding */
+}
+
+/* Piano Roll Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: none;
+    /* Hidden by default */
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-content {
+    width: 90%;
+    height: 85%;
+    background: var(--bg-medium);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-header {
+    height: 50px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: white;
+}
+
+iframe {
+    flex: 1;
+    border: none;
+    background: #000;
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    gap: 10px;
+}
+
+.control-btn {
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.control-btn:hover {
+    background: var(--border-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
+.control-btn.active {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-dim);
+}
+
+.track-color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
+}
+
+.track-color-dot:hover {
+    transform: scale(1.3);
+}
+
+.track-type-icon {
+    min-width: 20px;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    user-select: none;
+}
+
+.pattern-type-icon {
+    display: inline-block;
+    opacity: 0.6;
+    margin-right: 6px;
+    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+/* Rename Input Styling */
+.rename-input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--accent-color);
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    width: 100%;
+    outline: none;
+    box-shadow: 0 0 10px var(--accent-glow);
+    animation: fadeIn 0.2s ease;
+}
+
+.pattern-rename {
+    min-width: 120px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-color);
+}
+
+.pattern-rename:focus {
+    border-color: var(--accent-color);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Rubber-band (lasso) selection */
+.rubber-band {
+    position: absolute;
+    border: 1px dashed rgba(59, 130, 246, 0.8);
+    background: rgba(59, 130, 246, 0.12);
+    z-index: 500;
+    pointer-events: none;
+    display: none;
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}

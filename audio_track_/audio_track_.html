@@ -1,0 +1,20 @@
+<!-- This html is mandatory since minidaw accepts ONLY iframes! -->
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Audio Track Mixer</title>
+</head>
+
+<body>
+    <script src="../mixer_fx.js"></script>
+    <script>
+        const ctx = window.parent.masterAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        if (window.createMixerFX) { //if window.createMixerFX exists
+            window.mixerInput = window.createMixerFX(ctx); //create mixer input (audio node)
+        }
+    </script>
+</body>
+
+</html>

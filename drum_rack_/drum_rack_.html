@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <title>Actam</title>
+    <link rel="stylesheet" href="drum_rack_.css">
+</head>
+
+<body>
+
+    <div id="drum_rack_"></div>
+
+    <div id="fx-rack">
+        <div class="fx-rack-title">PER-PAD FX RACK (REVERB & DELAY)</div>
+    </div>
+
+    <div id="controls">
+        <button id="startBtn">START</button>
+        <button id="pauseBtn">PAUSE</button>
+        <button id="stopBtn">STOP</button>
+        <button id="clearBtn">CLEAR</button>
+
+        <div class="tempo-control">
+            <label>PADS: <input type="number" id="padsInput" min="4" max="64" step="4" value="16"></label>
+            <label>GROUP: <input type="number" id="groupInput" min="1" max="16" value="4"></label>
+        </div>
+
+        <div class="tempo-control">
+            <label>TEMPO: <input type="number" id="bpmInput" min="30" max="200" value="120"> BPM</label>
+            <input type="range" id="tempoSlider" min="30" max="200" value="120">
+        </div>
+
+        <div class="tempo-control">
+            <label>
+                <select id="swingGridSelect">
+                    <option value="16">SWING 1/16</option>
+                    <option value="8">SWING 1/8</option>
+                </select>
+                <span><input type="number" id="swingInput" min="0" max="100" value="0"> %</span>
+            </label>
+            <input type="range" id="swingSlider" min="0" max="100" value="0">
+        </div>
+    </div>
+
+
+
+    <script src="../mixer_fx.js"></script>
+    <script src="drum_rack_.js"></script>
+</body>
+
+</html>

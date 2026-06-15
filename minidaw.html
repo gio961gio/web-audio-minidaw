@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini DAW - Playlist</title>
+    <link rel="stylesheet" href="minidaw.css">
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+</head>
+
+<body>
+    <header class="toolbar">
+        <div class="logo">MINI DAW</div>
+        <div class="controls">
+            <button id="saveProjectBtn" class="control-btn" style="background:#1e3a8a; color:#60a5fa;"
+                title="Save Project">💾</button>
+            <button id="loadProjectBtn" class="control-btn" style="background:#1e3a8a; color:#60a5fa;"
+                title="Load Project">📂</button>
+            <button id="renderBtn" class="control-btn"
+                style="background:#09090b; border: 1px solid #10b981; color:#10b981; margin-right: 15px;"
+                title="Render to WAV">🔊</button>
+            <input type="file" id="loadProjectInput" accept=".mindaw" style="display: none;">
+
+            <button id="playBtn" class="control-btn">Play</button>
+            <button id="stopBtn" class="control-btn">Stop</button>
+            <button id="loopBtn" class="control-btn">Loop</button>
+            <button id="metronomeBtn" class="control-btn" title="Metronome">Metro</button>
+            <button id="mixerBtn" class="control-btn"
+                style="background:#2d343e; color:#00ff88; margin-left: 10px;">Mixer</button>
+        </div>
+        <div class="bpm-control">
+            <label for="bpmInput">BPM</label>
+            <input type="number" id="bpmInput" value="125" min="40" max="300">
+        </div>
+        <div class="grid-snap-control">
+            <label for="gridSelect">Snap</label>
+            <select id="gridSelect">
+                <option value="4">1/4 (Beat)</option>
+                <option value="2">1/8</option>
+                <option value="1" selected>1/16 (Step)</option>
+                <option value="0.5">1/32</option>
+                <option value="1.3333333333333333">1/3 (Triplet)</option>
+                <option value="0.6666666666666666">1/6 (Triplet)</option>
+            </select>
+        </div>
+        <div class="pattern-selector" id="patternSelector">
+            <button class="selector-btn action-btn" id="addPatternBtn" title="New Pattern">+</button>
+            <button class="selector-btn" id="prevPattern">◀</button>
+            <div class="current-pattern-display">
+                <span id="patternName">Pattern 1</span>
+                <div class="pattern-color-dot" id="patternColorDot" style="position: relative; cursor: pointer;">
+                    <input type="color" id="patternColorPicker"
+                        style="opacity: 0; position: absolute; width:100%; height:100%; cursor: pointer; top:0; left:0;">
+                </div>
+            </div>
+            <button class="selector-btn" id="nextPattern">▶</button>
+            <button class="selector-btn action-btn" id="clonePatternBtn" title="Clone Pattern">C</button>
+            <button class="selector-btn action-btn" id="deletePatternBtn" title="Delete Pattern">🗑</button>
+        </div>
+        <div class="perf-monitor" id="perfMonitor" title="CPU/System Load Indicator"
+            style="margin-left:auto; display:flex; gap:10px; align-items:center; background:#1e293b; padding:4px 10px; border-radius:6px; font-size:0.7rem; color:#94a3b8; border:1px solid #334155;">
+            <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                <span>FPS: <span id="perfFps" style="color:#00ff88;font-weight:bold;">60</span></span>
+                <span>LOAD: <span id="perfCpu" style="color:#60a5fa;font-weight:bold;">0%</span></span>
+            </div>
+            <div
+                style="width:40px; height:20px; background:#0f172a; border-radius:3px; position:relative; overflow:hidden;">
+                <div id="perfBar"
+                    style="position:absolute; bottom:0; left:0; height:100%; width:0%; background:#00ff88; transition:width 0.1s, background 0.1s;">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Sidebar: Lista delle Tracce e dei Pattern -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">TRACKS</div>
+            </div>
+            <div class="track-labels" id="trackLabels">
+                <!-- Verrà generato dinamicamente -->
+            </div>
+            <button class="add-track-btn" id="addTrackBtn">+ Add Track</button>
+        </aside>
+
+        <!-- Playlist: Griglia -->
+        <section class="playlist-container">
+            <div class="grid-scroll-area" id="gridScrollArea">
+                <div class="timeline" id="timeline"></div>
+                <div class="loop-region" id="loopRegion"></div>
+                <div class="grid-background" id="gridBackground"></div>
+                <div class="tracks-layer" id="tracksLayer">
+                    <!-- Verrà generato dinamicamente -->
+                </div>
+                <div class="playhead" id="playhead"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Piano Roll -->
+    <div class="modal-overlay" id="pianoRollModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalPatternTitle">Piano Roll - Pattern 1</div>
+                <button class="modal-close" id="closePianoRoll">×</button>
+            </div>
+            <iframe src="piano_roll_/piano_roll_.html" id="pianoRollFrame"></iframe>
+        </div>
+    </div>
+
+    <!-- Modal Instrument Editor -->
+    <div class="modal-overlay" id="instrumentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="instrumentTitle">Instrument - Synth Additive</div>
+                <button class="modal-close" id="closeInstrument">&times;</button>
+            </div>
+            <div id="instrumentFramesContainer" style="flex: 1; display: flex; flex-direction: column;">
+                <!-- Iframes per ogni traccia verranno iniettati qui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Choices (Pattern / Track Type) -->
+    <div class="modal-overlay" id="choiceModal" style="z-index: 2000;">
+        <div class="modal-content" style="width: 400px; height: auto; text-align: center; padding: 20px;">
+            <div class="modal-title" id="choiceModalTitle"
+                style="font-size: 1.2rem; margin-bottom: 20px; font-weight: 600;">Scegli il Tipo</div>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button class="menu-btn" id="choicePianoRollBtn"
+                    style="flex: 1; padding: 15px; background: rgba(59, 130, 246, 0.2); border: 2px solid #3b82f6; border-radius: 8px; cursor: pointer; color: white; transition: 0.2s;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🎹</div>
+                    Piano Roll
+                </button>
+                <button class="menu-btn" id="choiceDrumRackBtn"
+                    style="flex: 1; padding: 15px; background: rgba(16, 185, 129, 0.2); border: 2px solid #10b981; border-radius: 8px; cursor: pointer; color: white; transition: 0.2s;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🥁</div>
+                    Drum Rack
+                </button>
+                <button class="menu-btn" id="choiceChannelRackBtn"
+                    style="flex: 1; padding: 15px; background: rgba(245, 158, 11, 0.2); border: 2px solid #f59e0b; border-radius: 8px; cursor: pointer; color: white; transition: 0.2s;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🎛️</div>
+                    Channel Rack
+                </button>
+                <button class="menu-btn" id="choiceAudioTrackBtn"
+                    style="flex: 1; padding: 15px; background: rgba(236, 72, 153, 0.2); border: 2px solid #ec4899; border-radius: 8px; cursor: pointer; color: white; transition: 0.2s;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🎤</div>
+                    Audio Track
+                </button>
+            </div>
+            <button class="menu-btn" id="choiceCancelBtn"
+                style="margin-top: 20px; padding: 5px 15px; background: transparent; border: none; cursor: pointer; color: #888;">Annulla</button>
+        </div>
+    </div>
+
+    <!-- MIXER MODAL -->
+    <div id="mixerModal" style="display: none;">
+        <div class="modal-content"
+            style="max-width: 900px; height: 50% !important; min-height: 480px; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 1.5rem; font-weight: 600; color: #fff;">Mixer</h2>
+                <button class="menu-btn" id="closeMixerBtn"
+                    style="padding: 5px 15px; color: #888; background: transparent; border: none; cursor: pointer;">Chiudi</button>
+            </div>
+            <div id="mixerStripsContainer"
+                style="display: flex; gap: 15px; overflow-x: auto; overflow-y: auto; flex: 1; padding-bottom: 10px; align-items: flex-start;">
+                <!-- Vengono generate le corsie del mixer da js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- EQ MODAL -->
+    <div id="eqModal" style="display: none; z-index: 2000;">
+        <div class="modal-content"
+            style="max-width: 800px; width: 90%; background: #1e293b; padding: 20px; border-radius: 12px; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 id="eqModalTitle" style="font-size: 1.5rem; font-weight: 600; color: #fff;">Track EQ</h2>
+                <button class="menu-btn" id="closeEqBtn"
+                    style="padding: 5px 15px; color: #888; background: transparent; border: none; cursor: pointer;">Chiudi</button>
+            </div>
+
+            <!-- EQ Canvas Area -->
+            <div
+                style="width: 100%; height: 250px; background: #0f172a; border-radius: 8px; position: relative; margin-bottom: 20px; border: 1px solid #334155; overflow: hidden;">
+                <!-- Frequency Grid Overlay (optional) -->
+                <canvas id="eqCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+
+            <!-- EQ Controls Area -->
+            <div style="display: flex; gap: 20px; justify-content: space-between;">
+                <!-- LOW BAND -->
+                <div
+                    style="flex: 1; background: #2d343e; padding: 15px; border-radius: 8px; border-top: 4px solid #ef4444;">
+                    <h3 style="color: #fff; font-size: 0.9rem; margin-bottom: 15px; text-align: center;">LOW (Shelf)
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div>
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
+                                <label>Freq</label><span id="eqLowFreqVal">250 Hz</span>
+                            </div>
+                            <input type="range" id="eqLowFreq" min="20" max="1000" step="1" style="width: 100%;">
+                        </div>
+                        <div>
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
+                                <label>Gain</label><span id="eqLowGainVal">0.0 dB</span>
+                            </div>
+                            <input type="range" id="eqLowGain" min="-24" max="24" step="0.1" style="width: 100%;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MID BAND -->
+                <div
+                    style="flex: 1; background: #2d343e; padding: 15px; border-radius: 8px; border-top: 4px solid #10b981;">
+                    <h3 style="color: #fff; font-size: 0.9rem; margin-bottom: 15px; text-align: center;">MID (Peak)</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div>
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
+                                <label>Freq</label><span id="eqMidFreqVal">1000 Hz</span>
+                            </div>
+                            <input type="range" id="eqMidFreq" min="200" max="8000" step="1" style="width: 100%;">
+                        </div>
+                        <div>
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
+                                <label>Q</label><span id="eqMidQVal">1.0</span>
+                            </div>
+                            <input type="range" id="eqMidQ" min="0.1" max="10" step="0.1" style="width: 100%;">
+                        </div>
+                        <div>
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
+                                <label>Gain</label><span id="eqMidGainVal">0.0 dB</span>
+                            </div>
+                            <input type="range" id="eqMidGain" min="-24" max="24" step="0.1" style="width: 100%;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HIGH BAND -->
+                <div
+                    style="flex: 1; background: #2d343e; padding: 15px; border-radius: 8px; border-top: 4px solid #3b82f6;">
+                    <h3 style="color: #fff; font-size: 0.9rem; margin-bottom: 15px; text-align: center;">HIGH (Shelf)
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div>
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
+                                <label>Freq</label><span id="eqHighFreqVal">4000 Hz</span>
+                            </div>
+                            <input type="range" id="eqHighFreq" min="1000" max="20000" step="10" style="width: 100%;">
+                        </div>
+                        <div>
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
+                                <label>Gain</label><span id="eqHighGainVal">0.0 dB</span>
+                            </div>
+                            <input type="range" id="eqHighGain" min="-24" max="24" step="0.1" style="width: 100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Render Progress Modal -->
+    <div id="renderModal" class="modal-overlay" style="display: none;">
+        <div>
+            <div class="modal-header">
+                <h3>Export to WAV 💽</h3>
+                <button class="close-btn" id="closeRenderModal">&times;</button>
+            </div>
+            <div class="modal-body" style="text-align: center; padding: 20px;">
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Real-time audio rendering tracks
+                    everything you hear with absolute accuracy. This will play the track from start to end.</p>
+                <div style="margin-bottom: 20px;">
+                    <button class="add-track-btn" id="startRenderBtn" style="width: 100%;"><i class="fas fa-play"></i>
+                        START RENDER</button>
+                    <button class="add-track-btn" id="stopRenderBtn"
+                        style="background: #e11d48; width: 100%; display: none;"><i class="fas fa-stop"></i> STOP &
+                        EXPORT</button>
+                </div>
+                <div id="renderProgressContainer" style="display: none;">
+                    <div style="font-size: 0.8rem; color: #10b981; margin-bottom: 5px;">Rendering in progress... <span
+                            id="renderTimerText">00:00</span></div>
+                    <div style="width: 100%; background: #1e293b; height: 10px; border-radius: 5px; overflow: hidden;">
+                        <div id="renderProgressBar"
+                            style="width: 0%; height: 100%; background: #10b981; transition: width 0.2s;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Missing Audio Files Modal -->
+    <div id="missingAudioModal" class="modal-overlay" style="display:none; z-index:3000;">
+        <div class="modal-content"
+            style="width:480px; height:auto; padding:30px; text-align:center; max-height:90vh; overflow-y:auto;">
+            <div style="font-size:2rem; margin-bottom:10px;">📁</div>
+            <div class="modal-title" style="font-size:1.15rem; margin-bottom:8px; font-weight:600; color:#f59e0b;">
+                File Audio Mancanti
+            </div>
+            <p style="color:#94a3b8; font-size:0.82rem; margin-bottom:18px; line-height:1.5;">
+                Il progetto contiene file audio non incorporati nel file di salvataggio.<br>
+                Seleziona la <strong style="color:#fff;">cartella</strong> dove si trovano i tuoi campioni:<br>
+                il DAW li troverà automaticamente al suo interno.
+            </p>
+            <ul id="missingAudioList" style="text-align:left; list-style:none; background:rgba(0,0,0,0.3);
+                       border-radius:8px; padding:12px 16px; margin-bottom:18px;
+                       max-height:150px; overflow-y:auto; font-size:0.82rem; color:#f59e0b;">
+            </ul>
+
+            <!-- Progress block (hidden until scan/load starts) -->
+            <div id="missingAudioProgress" style="display:none; margin-bottom:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span id="missingAudioProgressLabel"
+                        style="font-size:0.78rem; color:#94a3b8; letter-spacing:0.03em;"></span>
+                    <span id="missingAudioProgressPct"
+                        style="font-size:0.78rem; color:#10b981; font-weight:600;"></span>
+                </div>
+                <div style="width:100%; height:8px; background:rgba(255,255,255,0.07);
+                            border-radius:99px; overflow:hidden;">
+                    <div id="missingAudioProgressBar" style="height:100%; width:0%;
+                                background: linear-gradient(90deg, #10b981, #34d399);
+                                border-radius:99px;
+                                transition: width 0.25s ease;"></div>
+                </div>
+            </div>
+
+            <div id="missingAudioStatus" style="font-size:0.8rem; color:#10b981; margin-bottom:16px; min-height:1.3em;">
+            </div>
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button id="missingAudioSelectBtn" class="add-track-btn" style="flex:1; max-width:220px; padding:10px;">
+                    📂 Seleziona File Audio
+                </button>
+                <button id="missingAudioSkipBtn" style="padding:10px 20px; background:transparent;
+                               border:1px solid #475569; border-radius:6px;
+                               color:#94a3b8; cursor:pointer; font-family:inherit;">
+                    Salta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="minidaw.js"></script>
+</body>
+
+</html>

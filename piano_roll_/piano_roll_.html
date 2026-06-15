@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Adatta la dimensione pagina a qualsiasi dispositivo -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano Roll - FL Studio Style</title>
+    <!-- Font di sistema e Icone Moderne -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="piano_roll_.css">
+</head>
+
+<body>
+    <div class="toolbar">
+        <div class="transport-controls">
+            <button id="playBtn" class="btn" title="Play (Space)"><i class="fas fa-play"></i> PLAY</button>
+            <button id="stopBtn" class="btn" title="Stop (Space)"><i class="fas fa-stop"></i> STOP</button>
+            <button id="loopBtn" class="btn" title="Toggle Loop"><i class="fas fa-repeat"></i> LOOP</button>
+            <button id="clearBtn" class="btn delete" title="Clear All"><i class="fas fa-trash-can"></i> CLEAR</button>
+        </div>
+
+        <div class="tempo-group">
+            <label>BPM: <input type="number" id="bpmInput" value="120" min="40" max="300"></label>
+            <label style="margin-left: 15px;">GRID:
+                <select id="gridSelect">
+                    <option value="4">1/4</option>
+                    <option value="2">1/8</option>
+                    <option value="1" selected>1/16</option>
+                    <option value="1.3333333333333333">1/3</option>
+                    <option value="0.6666666666666666">1/6</option>
+                </select>
+            </label>
+            <label style="margin-left: 15px;">STEPS: <input type="number" id="stepsInput" value="64" min="16" max="512"
+                    step="16"></label>
+            <label style="margin-left: 15px;">OCTAVES: <input type="number" id="octavesInput" value="4" min="1"
+                    max="7"></label>
+            <label style="margin-left: 15px;">TARGET TRACK:
+                <select id="targetTrackSelect">
+                    <!-- Options populated by JS -->
+                </select>
+            </label>
+        </div>
+
+        <div class="toolbar-title">PIANO ROLL</div>
+    </div>
+
+    <!-- Contenitore principale diviso in pianola sx e griglia dx -->
+    <div class="piano-roll-container" id="roll-scroll-area">
+        <!-- Pianola / Tastiera (Fissa a sinistra) -->
+        <div class="keyboard" id="keyboard"></div>
+
+        <!-- Area di disegno note (Scrollabile in orizzontale) -->
+        <div class="grid-container" id="grid-container">
+            <div class="timeline" id="timeline">
+                <div class="loop-region" id="loop-region"></div>
+            </div>
+
+            <!-- (Layer più basso) Sfondo della griglia con le righe e le colonne musicali -->
+            <div class="grid-background" id="grid-background"></div>
+
+            <!-- (Layer più alto) Livello dove posizioniamo fisicamente i blocchetti colorati delle note -->
+            <div class="notes-layer" id="notes-layer"></div>
+
+            <!-- Linea gialla verticale scorrevole (Testina di riproduzione) -->
+            <div class="playhead" id="playhead"></div>
+        </div>
+    </div>
+
+    <script src="piano_roll_.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,157 @@
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 30px;
+    min-height: 100vh;
+}
+
+#sequencer-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.track-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: max-content;
+}
+
+.drop-zone {
+    width: 120px;
+    height: 60px;
+    border: 2px dashed #444;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 5px;
+    cursor: pointer;
+    transition: border-color 0.3s, background-color 0.3s;
+    flex-shrink: 0;
+}
+
+.drop-zone.drag-over {
+    border-color: #00ff88;
+    background-color: rgba(0, 255, 136, 0.1);
+}
+
+.sample-name {
+    font-weight: bold;
+    font-size: 0.6rem;
+    color: #888;
+    word-break: break-all;
+    pointer-events: none;
+}
+
+.sequencer-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+}
+
+.step {
+    flex: 0 0 60px;
+    aspect-ratio: 1;
+    background-color: #333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    touch-action: manipulation;
+    
+    /* PREPARAZIONE PER L'ANIMAZIONE */
+    outline: 2px solid rgba(255, 255, 255, 0); /* Contorno invisibile di base */
+    outline-offset: 1px;
+    filter: brightness(1);
+    
+    /* SLOW RELEASE: Quando la classe .playing viene tolta, ci mette 0.4s a spegnersi */
+    transition: background-color 0.05s, outline-color 0.4s ease-out, filter 0.4s ease-out;
+}
+
+.step.active {
+    background-color: #00ff88;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.step.playing {
+    /* EFFETTO VISIVO ACCESO */
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    filter: brightness(1.6); /* Diventa molto più luminoso */
+    z-index: 2;
+    
+    /* FAST ATTACK: Quando la classe .playing viene aggiunta, si accende in 0 secondi (istantaneo) */
+    transition: background-color 0s, outline-color 0s, filter 0s;
+}
+
+#controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+    position: sticky;
+    bottom: 0;
+    width: fit-content;
+}
+
+button {
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+#playBtn {
+    background-color: #00ff88;
+    color: #121212;
+}
+
+#stopBtn {
+    background-color: #ff4444;
+    color: white;
+}
+
+button:active {
+    opacity: 0.7;
+}
+
+.tempo-control {
+    display: flex;
+    flex-direction: column;
+}
+
+.tempo-control label {
+    font-size: 0.7rem;
+    margin-bottom: 4px;
+    color: #888;
+}
+
+input[type="number"],
+select {
+    background: #333;
+    border: 1px solid #444;
+    color: white;
+    padding: 5px;
+    width: 70px;
+    border-radius: 4px;
+    outline: none;
+}
+
+select option {
+    background: #1e1e1e;
+}
+
+.info {
+    margin-left: 20px;
+    font-size: 0.7rem;
+    color: #666;
+    max-width: 200px;
+}

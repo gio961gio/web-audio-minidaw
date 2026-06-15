@@ -1,0 +1,398 @@
+/* FL Studio Piano Roll Style CSS */
+* {
+    box-sizing: border-box;
+    user-select: none;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #353c42;
+    /* FL Studio greenish/grey scuro per lo sfondo */
+    color: #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    /* La pagina intera non scorre verticalmente, ma solo il contenuto che ha overflow:auto */
+}
+
+/* === TOOLBAR SUPERIORE === */
+.toolbar {
+    height: 55px;
+    background-color: #2b3036;
+    /* Barra strumenti scura */
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 30px;
+    border-bottom: 2px solid #1a1e22;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.transport-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    background-color: #454d58;
+    color: #cbd5e1;
+    border: 1px solid #1a1e22;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.btn i {
+    font-size: 14px;
+}
+
+.btn:hover {
+    background-color: #555e6b;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    border-color: #6366f1;
+}
+
+.btn:active {
+    background-color: #3b4249;
+    border-top: 1px solid #1a1e22;
+    box-shadow: none;
+    transform: translateY(1px);
+}
+
+.btn.active {
+    background-color: #55c855;
+    /* Verde FL Studio */
+    color: #052e05;
+    border-color: #3aa63a;
+    box-shadow: 0 0 10px rgba(85, 200, 85, 0.4);
+}
+
+.btn.delete:active {
+    background-color: #e53e3e;
+    color: white;
+}
+
+.tempo-group {
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tempo-group label {
+    display: flex;
+    align-items: center;
+}
+
+.tempo-group input,
+.tempo-group select {
+    background: transparent;
+    color: #55c855;
+    border: none;
+    font-weight: 700;
+    font-size: 13px;
+    text-align: center;
+    outline: none;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.tempo-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 0 5px;
+}
+
+.tempo-group input:hover,
+.tempo-group select:hover {
+    color: #82ff82;
+}
+
+.tempo-group input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    /* Nasconde le freccette degli input */
+}
+
+.toolbar-title {
+    margin-left: auto;
+    font-weight: 800;
+    font-size: 18px;
+    color: #55c855;
+    opacity: 0.7;
+    letter-spacing: 2px;
+}
+
+/* === PIANO ROLL LAYOUT === */
+.piano-roll-container {
+    display: flex;
+    flex: 1;
+    /* Riempie tutto lo spazio rimanente  */
+    overflow: auto;
+    /* Gli elementi interni si posizionano relativamente ai bordi contenitore (quindi non alla pagina) */
+    position: relative;
+    background-color: #2b3036;
+    /* Sfondo del workspace */
+}
+
+/* Variabili globali (le alteriamo da JS, ma qui settiamo i default) */
+:root {
+    --key-height: 18px;
+    /* Altezza di una riga/semitono */
+    --step-width: 40px;
+    /* Larghezza di 1/16imo (uno step) */
+}
+
+/* --- TASTIERA LATERALE --- */
+.keyboard {
+    width: 65px;
+    flex-shrink: 0;
+    background-color: #cfd4d9;
+    /* Base tasti bianchi */
+    position: sticky;
+    /* Rimane bloccata sulla sx quando scorri via orizzontalmente! */
+    left: 0;
+    z-index: 5;
+    border-right: 2px solid #111;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.key {
+    height: var(--key-height);
+    width: 100%;
+    /* Il tasto occupa tutta la larghezza del suo contenitore (.keyboard) */
+    display: flex;
+    align-items: center;
+    /* Per i nomi delle note */
+    justify-content: flex-end;
+    /* Per i nomi delle note */
+    padding-right: 4px;
+    font-size: 9px;
+    font-weight: bold;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background-color 0.1s;
+    flex-shrink: 0;
+    /* Se lo spazio è poco, il browser non ridimensiona */
+}
+
+.key.white {
+    background-color: #e4e9ed;
+    color: #444;
+    border-bottom: 1px solid #bcc2c8;
+}
+
+.key.white:hover {
+    background-color: #f8fafc;
+}
+
+.key.white.active {
+    background-color: #55c855;
+    color: #000;
+}
+
+.key.black {
+    background-color: #1a1d21;
+    color: #718096;
+    border-bottom: 1px solid #111;
+    border-top: 1px solid #2d333b;
+    /* Tasti neri 'rialzati' */
+}
+
+.key.black:hover {
+    background-color: #2d333b;
+}
+
+.key.black.active {
+    background-color: #2b8a2b;
+    color: white;
+}
+
+
+/* --- GRIGLIA MISURE E BATTUTE --- */
+.grid-container {
+    position: relative;
+    flex: 1;
+    min-height: max-content;
+}
+
+.timeline {
+    position: sticky;
+    top: 0;
+    height: 24px;
+    width: 100%;
+    background-color: #262b30;
+    border-bottom: 2px solid #111;
+    z-index: 20;
+    cursor: ew-resize;
+    /* Separatori verticali degli step della timeline */
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: var(--step-width) 100%;
+}
+
+.loop-region {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(234, 46, 46, 0.3);
+    /* Rosso FL Studio per selezioni */
+    border-left: 2px solid #ea2e2e;
+    border-right: 2px solid #ea2e2e;
+    pointer-events: none;
+    /* Viene oltrepassata dal click  */
+    display: none;
+    /* Invisibile quando non c'è un loop specifico */
+}
+
+.grid-background {
+    position: relative;
+    pointer-events: none;
+    /* Viene oltrepassata dal click */
+    /* Cruciale: i click cadono sugli elementi row sottostanti */
+
+    /* Costruiamo la griglia ritmica (battute) con CSS Gradients */
+    background-image:
+        linear-gradient(to right, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+        /*Linea step*/
+        linear-gradient(to right, rgba(0, 0, 0, 0.5) 1px, transparent 1px);
+    /*Linea battuta*/
+    background-size: var(--step-width) 100%, calc(var(--step-width) * 4) 100%;
+    /*Logica sulla ripetizione delle linee*/
+
+    width: 100%;
+    z-index: 1;
+}
+
+/* Le righe orizzontali in base alla tonalità */
+.grid-row {
+    height: var(--key-height);
+    width: 100%;
+    border-bottom: 1px solid #22262b;
+    /* Linea di divisione orizzontale Note */
+    box-sizing: border-box;
+    pointer-events: auto;
+    /* IMPORTANTE: Permette di intercettare il click per aggiungere note */
+}
+
+/* --- SELECTION BOX --- */
+.selection-box {
+    position: absolute;
+    border: 1px dashed rgba(255, 60, 60, 0.8);
+    background-color: rgba(255, 60, 60, 0.2);
+    z-index: 100;
+    pointer-events: none;
+    display: none;
+}
+
+/* Le righe relative ai tasti neri sono più scure (Stile classico piano-roll) */
+.grid-row.black-key-row {
+    background-color: rgba(15, 18, 20, 0.4);
+}
+
+.grid-row:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    /* Cursore guida quando passi con il mouse */
+}
+
+/* --- LE NOTE (EVENTI MIDI) --- */
+.notes-layer {
+    position: absolute;
+    top: 24px;
+    /* Spostato sotto la timeline */
+    left: 0;
+    width: 100%;
+    height: calc(100% - 24px);
+    z-index: 2;
+    /* Sopra le righe, sotto il playhead */
+    pointer-events: none;
+    /* IMPORTANTE: Lascia passare i click alla griglia rows sottostante */
+}
+
+.note {
+    position: absolute;
+    height: calc(var(--key-height) - 1px);
+    background-color: #55c855;
+    /* Verde Acido/Lime classico FL Studio */
+    border: 1px solid #1a591a;
+    border-radius: 2px;
+    box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.4), inset 0 -2px 3px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    box-sizing: border-box;
+    z-index: 3;
+    opacity: 0.9;
+    pointer-events: auto;
+    /* Permette di cliccare la nota per cancellarla */
+}
+
+.note:hover {
+    filter: brightness(1.2);
+    border-color: #fff;
+}
+
+.note.selected {
+    filter: brightness(1.5);
+    border: 1px solid #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.note.playing {
+    background-color: #fff;
+    /* Lampeggia di bianco quando viene suonata */
+    box-shadow: 0 0 15px #55c855;
+    z-index: 4;
+}
+
+.note-resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 6px;
+    height: 100%;
+    cursor: ew-resize;
+    z-index: 5;
+}
+
+.note-resize-handle:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    /* Feedback visivo al passaggio */
+}
+
+/* --- PLAYHEAD (Il cursore giallo di scorrimento) --- */
+.playhead {
+    position: absolute;
+    top: 24px;
+    /* Sotto la timeline */
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    background-color: #eab308;
+    /* Colore giallo come FL Studio Cursore */
+    box-shadow: 0 0 8px #eab308;
+    pointer-events: none;
+    z-index: 10;
+    display: none;
+    /* Invisibile finché non premi Start */
+    transition: left linear;
+    /* Gestito dinamicamente dal JS in base ai BPM! */
+}

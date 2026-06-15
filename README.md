@@ -1,0 +1,1 @@
+The DAW is contained in the file minidaw.html. If you encounter any issues caused by communication between the iframes (which may prevent the project from working properly), open the project in an Incognito window.

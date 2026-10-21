@@ -1,14 +1,12 @@
 # MiniDAW (ACTAM)
 
-> **A Modular, Framework-less Web Audio Digital Audio Workstation**  
-> Developed for the university course **ACTAM** (*Architetture Computazionali e Tecnologie per l'Audio Musicale*).
+> **A Modular, Framework-less Web Audio Digital Audio Workstation**
 
 [![Web Audio API](https://img.shields.io/badge/Web_Audio_API-W3C_Standard-blue.svg)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
 [![Tone.js](https://img.shields.io/badge/Tone.js-v14.8.49-orange.svg)](https://tonejs.github.io/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B_Vanilla-yellow.svg)](https://developer.mozilla.org)
 [![HTML5 / Canvas](https://img.shields.io/badge/HTML5-Canvas_&_Iframes-red.svg)](https://developer.mozilla.org)
 [![CSS3](https://img.shields.io/badge/UI-Modern_Dark_Mode-blueviolet.svg)](https://developer.mozilla.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
@@ -98,18 +96,6 @@ Duplicating a 16-bar drum beat 100 times across the timeline instantiates 100 mi
 During each clock tick, the playback engine dynamically determines the clip modality:
 * **MIDI Clips:** Dispatched over the Data Lane (`postMessage`) to trigger instrument voices.
 * **Audio Clips:** Decoded audio buffers scheduled directly onto the timeline via `Tone.js` audio nodes and rendered onto the playlist with real-time waveform graphics.
-
----
-
-## 🖼️ Architectural Diagrams & Previews
-
-| MiniDAW Pipeline Overview | Additive Synthesizer DSP Chain |
-| :---: | :---: |
-| ![MiniDAW Pipeline](docs/images/minidaw_pipeline.png) | ![Synth DSP Chain](docs/images/synth_chain.png) |
-
-| Simpler Sampler Interface | Drum Rack & Piano Roll Matrix |
-| :---: | :---: |
-| ![Sampler Preview](docs/images/sampler_preview.png) | ![Drum Rack Preview](docs/images/drum_rack_piano_roll_preview.png) |
 
 ---
 
@@ -292,26 +278,5 @@ ACTAM--miniDaw-/
 │   ├── synth_additive_.html
 │   ├── synth_additive_.js
 │   └── synth_additive_.css
-├── docs/images/                  # Architectural diagrams and interface previews
-│   ├── minidaw_pipeline.png
-│   ├── synth_chain.png
-│   ├── sampler_preview.png
-│   ├── channel_rack_preview.png
-│   ├── drum_rack_piano_roll_preview.png
-│   └── synth_additive_preview.png
-├── LICENSE                       # MIT License
-└── README.md                     # Comprehensive documentation
+└── README.md                     # Documentation
 ```
-
----
-
-## 🎓 Academic Credits
-
-This project was engineered by **Giovanni Antonecchia** ([@gio961gio](https://github.com/gio961gio)) for the exam project of the **ACTAM** course (*Architetture Computazionali e Tecnologie per l'Audio Musicale* - Computer Architectures and Technologies for Musical Audio), exploring browser-based audio synthesis, asynchronous DSP pipelines, and modern web multimedia engineering.
-
----
-
-## 📄 License
-
-This project is open-source and released under the [MIT License](LICENSE).
-Feel free to use, modify, and build upon this architecture for educational, academic, or creative audio endeavors.

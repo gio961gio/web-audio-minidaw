@@ -8,6 +8,10 @@
 [![HTML5 / Canvas](https://img.shields.io/badge/HTML5-Canvas_&_Iframes-red.svg)](https://developer.mozilla.org)
 [![CSS3](https://img.shields.io/badge/UI-Modern_Dark_Mode-blueviolet.svg)](https://developer.mozilla.org)
 
+<p align="center">
+  <img src="assets/minidaw_preview.png" alt="Web Audio MiniDAW Interface Preview" width="100%" />
+</p>
+
 ---
 
 ## 🎧 Overview

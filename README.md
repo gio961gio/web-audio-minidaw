@@ -9,7 +9,7 @@
 [![CSS3](https://img.shields.io/badge/UI-Modern_Dark_Mode-blueviolet.svg)](https://developer.mozilla.org)
 
 <p align="center">
-  <img src="assets/minidaw_preview.png" alt="Web Audio MiniDAW Interface Preview" width="100%" />
+  <img src="assets/minidaw_workstation_overview.png" alt="Web Audio MiniDAW Interface Preview" width="100%" />
 </p>
 
 ---

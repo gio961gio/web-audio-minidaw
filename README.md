@@ -1,4 +1,4 @@
-# MiniDAW (ACTAM)
+# Web Audio MiniDAW
 
 > **A Modular, Framework-less Web Audio Digital Audio Workstation**
 
@@ -212,8 +212,8 @@ This starts a local Python HTTP server on port 5502 and opens Google Chrome in I
 #### Option B: Terminal / Command Line
 1. Clone this repository:
    ```bash
-   git clone https://github.com/gio961gio/ACTAM--miniDaw-.git
-   cd ACTAM--miniDaw-
+   git clone https://github.com/gio961gio/web-audio-minidaw.git
+   cd web-audio-minidaw
    ```
 2. Start a local HTTP server:
    ```bash
@@ -250,7 +250,7 @@ This starts a local Python HTTP server on port 5502 and opens Google Chrome in I
 ## 📁 Repository Structure
 
 ```
-ACTAM--miniDaw-/
+web-audio-minidaw/
 ├── minidaw.html                  # Main Host Application & Timeline Arranger
 ├── minidaw.js                    # Host logic, transport, clip engine, WAV renderer, telemetry
 ├── minidaw.css                   # Global styling and dark-theme layout
